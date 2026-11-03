@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام ادارة وتحليل تنائج الطلاب</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    
+<div class="toast" id="toast"></div>
+
+<div class="container">
+
+  <div class="header">
+    <div class="header-title">
+      <div class="header-icon">🎓</div>
+      <div>
+        <h1>نظام إدارة وتحليل نتائج الطلاب</h1>
+        <p>لوحة تحكم متكاملة لتحليل النتائج الأكاديمية</p>
+      </div>
+    </div>
+    <div class="header-badge" id="totalCount">0 طالب</div>
+  </div>
+
+  <div class="grid">
+
+    <div>
+      <div class="card">
+        <div class="card-title">
+          <span class="icon">➕</span>
+          إضافة طالب جديد
+        </div>
+
+        <form id="studentForm">
+          <div class="form-group">
+            <label class="form-label">رقم الجلوس</label>
+            <input type="number" class="form-input" id="studentId" placeholder="مثال: 1" required min="1" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">اسم الطالب</label>
+            <input type="text" class="form-input" id="studentName" placeholder="مثال: أحمد محمد" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              الدرجات
+              <span class="hint">(المادة 1 / 2 / 3)</span>
+            </label>
+            <div class="grades-row">
+              <input type="number" class="grade-input" id="grade1" placeholder="0-100" min="0" max="100" required />
+              <input type="number" class="grade-input" id="grade2" placeholder="0-100" min="0" max="100" required />
+              <input type="number" class="grade-input" id="grade3" placeholder="0-100" min="0" max="100" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              نسبة الحضور
+              <span class="hint">(%)</span>
+            </label>
+            <input type="number" class="form-input" id="attendance" placeholder="0-100" min="0" max="100" required />
+          </div>
+
+          <button type="submit" class="btn btn-primary">
+            <span>💾</span> إضافة الطالب
+          </button>
+
+          <button type="button" class="btn btn-secondary" id="fillSample">
+            <span>🎲</span> ملء بيانات تجريبية
+          </button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <span class="icon">🏆</span>
+          الترتيب الأكاديمي
+        </div>
+        <div id="rankingList">
+          <div class="empty-state">
+            <div class="icon">📭</div>
+            <p>لا توجد بيانات بعد</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div>
+
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div class="stat-label">إجمالي الطلاب</div>
+          <div class="stat-value primary" id="statTotal">0</div>
+        </div>
+        <div class="stat-card success">
+          <div class="stat-icon">✅</div>
+          <div class="stat-label">عدد الناجحين</div>
+          <div class="stat-value success" id="statPassed">0</div>
+        </div>
+        <div class="stat-card danger">
+          <div class="stat-icon">❌</div>
+          <div class="stat-label">عدد الراسبين</div>
+          <div class="stat-value danger" id="statFailed">0</div>
+        </div>
+        <div class="stat-card warning">
+          <div class="stat-icon">📈</div>
+          <div class="stat-label">معدل الفصل</div>
+          <div class="stat-value warning" id="statAverage">0.00</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <span class="icon">📋</span>
+          جدول النتائج
+        </div>
+
+        <div class="actions-bar">
+          <button class="btn btn-success" id="exportBtn">
+            <span>📥</span> تصدير CSV
+          </button>
+          <button class="btn btn-secondary" id="clearBtn">
+            <span>🗑️</span> مسح الكل
+          </button>
+          <button class="btn btn-secondary" id="printBtn">
+            <span>🖨️</span> طباعة
+          </button>
+        </div>
+
+        <div class="search-box">
+          <span class="icon">🔍</span>
+          <input type="text" id="searchInput" placeholder="ابحث بالاسم أو رقم الجلوس..." />
+        </div>
+
+        <div class="table-wrap">
+          <table id="resultsTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>رقم الجلوس</th>
+                <th>الاسم</th>
+                <th>الدرجات</th>
+                <th>الحضور</th>
+                <th>المتوسط</th>
+                <th>التقدير</th>
+                <th>النتيجة</th>
+                <th>حذف</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    
+      <div class="card">
+        <div class="card-title">
+          <span class="icon">📊</span>
+          التحليلات البيانية
+        </div>
+        <div class="charts-grid">
+          <div class="chart-box">
+            <canvas id="gradeChart"></canvas>
+          </div>
+          <div class="chart-box">
+            <canvas id="passChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="./js/main.js"></script>
+
+
+
+</body>
+</html>
+
+
