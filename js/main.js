@@ -293,3 +293,32 @@ students = [
   new Student(5, "سارة علي", [78, 40, 75], 40),
   new Student(6, "عادل خالد", [65, 70, 68], 30),
 ]
+/*resporsev*/ 
+
+
+function renderTable() {
+  const q = searchInput.value.trim().toLowerCase();
+  const filtered = students.filter(s => s.name.toLowerCase().includes(q) || String(s.id).includes(q));
+
+  if (filtered.length === 0) {
+    tableBody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><div class="icon">📭</div><h3>${students.length === 0 ? "لا توجد بيانات" : "لا توجد نتائج مطابقة"}</h3></div></td></tr>`;
+    return;
+  }
+
+  tableBody.innerHTML = filtered.map((s, i) => {
+    const r = s.getFinalResult();
+    const isPass = r.status === "ناجح";
+    return `<tr>
+      <td data-label="#">${i + 1}</td>
+      <td data-label="رقم الجلوس"><strong>${s.id}</strong></td>
+      <td data-label="الاسم">${s.name}</td>
+      <td data-label="الدرجات">${s.grades.join(" - ")}</td>
+      <td data-label="الحضور">${s.attendance}%</td>
+      <td data-label="المتوسط"><strong>${r.average.toFixed(2)}</strong></td>
+      <td data-label="التقدير"><span class="badge badge-${r.grade}">${r.grade}</span></td>
+      <td data-label="النتيجة"><span class="badge ${isPass ? "badge-pass" : "badge-fail"}">${r.status}</span></td>
+      <td><button class="btn-delete" onclick="deleteStudent(${s.id})">🗑️ حذف</button></td>
+    </tr>`;
+  }).join("");
+}
+// 
